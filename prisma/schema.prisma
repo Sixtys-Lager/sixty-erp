@@ -8,8 +8,8 @@ datasource db {
 }
 
 model Customer {
-  id             Int      @id @default(autoincrement())
-  customerNumber String   @unique
+  id             Int       @id @default(autoincrement())
+  customerNumber String    @unique
   company        String
   contact        String?
   street         String?
@@ -17,5 +17,20 @@ model Customer {
   city           String?
   email          String?
   phone          String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
+
+  invoices       Invoice[]
+}
+
+model Invoice {
+  id            Int      @id @default(autoincrement())
+  invoiceNumber String   @unique
+  customerId    Int
+  customer      Customer @relation(fields: [customerId], references: [id])
+  date          DateTime @default(now())
+  dueDate       DateTime
+  status        String   @default("Entwurf")
+  netAmount     Float    @default(0)
+  grossAmount   Float    @default(0)
+  createdAt     DateTime @default(now())
 }

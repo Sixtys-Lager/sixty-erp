@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Customer } from "@/services/customers";
 
 type CustomerFormProps = {
+  customer?: Customer | null;
   onSaved: () => void;
 };
 
-export default function CustomerForm({ onSaved }: CustomerFormProps) {
+export default function CustomerForm({ customer, onSaved }: CustomerFormProps) {
   const [company, setCompany] = useState("");
   const [contact, setContact] = useState("");
   const [street, setStreet] = useState("");
@@ -15,24 +17,32 @@ export default function CustomerForm({ onSaved }: CustomerFormProps) {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
+  useEffect(() => {
+    setCompany(customer?.company ?? "");
+    setContact(customer?.contact ?? "");
+    setStreet(customer?.street ?? "");
+    setZip(customer?.zip ?? "");
+    setCity(customer?.city ?? "");
+    setEmail(customer?.email ?? "");
+    setPhone(customer?.phone ?? "");
+  }, [customer]);
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    const response = await fetch("/api/customers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        company,
-        contact,
-        street,
-        zip,
-        city,
-        email,
-        phone,
-      }),
+    const url = customer ? `/api/customers/${customer.id}` : "/api/customers";
+    const method = customer ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company, contact, street, zip, city, email, phone }),
     });
+
+    if (!response.ok) {
+      alert("Kunde konnte nicht gespeichert werden.");
+      return;
+    }
 
     setCompany("");
     setContact("");
@@ -43,15 +53,11 @@ export default function CustomerForm({ onSaved }: CustomerFormProps) {
     setPhone("");
 
     onSaved();
-    if (!response.ok) {
-  alert("Kunde konnte nicht gespeichert werden.");
-  return;
-}
   }
 
   return (
     <form onSubmit={handleSubmit} style={styles.form}>
-      <h2 style={styles.title}>Neuer Kunde</h2>
+      <h2 style={styles.title}>{customer ? "Kunde bearbeiten" : "Neuer Kunde"}</h2>
 
       <input style={styles.input} placeholder="Firma" value={company} onChange={(e) => setCompany(e.target.value)} required />
       <input style={styles.input} placeholder="Ansprechpartner" value={contact} onChange={(e) => setContact(e.target.value)} />
@@ -62,7 +68,7 @@ export default function CustomerForm({ onSaved }: CustomerFormProps) {
       <input style={styles.input} placeholder="Telefon" value={phone} onChange={(e) => setPhone(e.target.value)} />
 
       <button type="submit" style={styles.button}>
-        Kunde speichern
+        {customer ? "Änderungen speichern" : "Kunde speichern"}
       </button>
     </form>
   );
