@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Customer {
-  id        Int      @id @default(autoincrement())
-  company   String
-  contact   String?
-  street    String?
-  zip       String?
-  city      String?
-  email     String?
-  phone     String?
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  customerNumber String   @unique
+  company        String
+  contact        String?
+  street         String?
+  zip            String?
+  city           String?
+  email          String?
+  phone          String?
+  createdAt      DateTime @default(now())
 }

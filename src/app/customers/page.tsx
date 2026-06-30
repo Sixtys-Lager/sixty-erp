@@ -1,5 +1,6 @@
 "use client";
 
+import CustomerForm from "@/components/CustomerForm";
 import { useEffect, useState } from "react";
 import BackToDashboard from "@/components/BackToDashboard";
 import { getCustomers, type Customer } from "@/services/customers";
@@ -15,16 +16,21 @@ type Customer = {
 };
 
 export default function CustomersPage() {
- const [customers, setCustomers] = useState<Customer[]>([]);
- useEffect(() => {
-  getCustomers()
-    .then(setCustomers)
-    .catch(console.error);
-}, []);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  async function reloadCustomers() {
+    const data = await getCustomers();
+    setCustomers(data);
+  }
+
+  useEffect(() => {
+    reloadCustomers().catch(console.error);
+  }, []);
+
   return (
     <main style={styles.page}>
       <BackToDashboard />
-
+      <CustomerForm onSaved={reloadCustomers} />
       <header style={styles.header}>
         <div>
           <h1 style={styles.title}>Kunden</h1>
@@ -45,11 +51,11 @@ export default function CustomersPage() {
         </div>
 
         {customers.map((customer) => (
-          <div key={customer.customerNo} style={styles.row}>
+          <div key={customer.id} style={styles.row}>
             <strong>{customer.company}</strong>
             <span>{customer.contact}</span>
             <span>{customer.city}</span>
-            <span>{customer.id}</span>
+            <span>{customer.customerNumber}</span>
             <span style={styles.badge}>{0} Rechnung(en)</span>
           </div>
         ))}
