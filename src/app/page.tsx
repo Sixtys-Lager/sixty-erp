@@ -1,4 +1,8 @@
-import Link from "next/link";
+"use client";
+
+import DashboardCard from "@/components/DashboardCard";
+import Sidebar from "@/components/Sidebar";
+
 const menuItems = [
   "Dashboard",
   "Kunden",
@@ -13,28 +17,7 @@ const menuItems = [
 export default function Home() {
   return (
     <main style={styles.app}>
-      <aside style={styles.sidebar}>
-        <div>
-          <h1 style={styles.logo}>SixtyERP</h1>
-          <p style={styles.subtitle}>Sixty&apos;s Lager & Logistik</p>
-        </div>
-
-        <nav style={styles.nav}>
-          {menuItems.map((item) => {
-  const href =
-    item === "Dashboard" ? "/" :
-    item === "Kunden" ? "/customers" :
-    item === "Rechnungen" ? "/invoices" :
-    "#";
-
-  return (
-    <Link key={item} href={href} style={styles.navButton}>
-      {item}
-    </Link>
-  );
-})}
-        </nav>
-      </aside>
+      <Sidebar />
 
       <section style={styles.content}>
         <header style={styles.header}>
@@ -59,15 +42,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-  );
-}
-
-function DashboardCard({ title, value }: { title: string; value: string }) {
-  return (
-    <div style={styles.card}>
-      <p style={styles.cardTitle}>{title}</p>
-      <strong style={styles.cardValue}>{value}</strong>
-    </div>
   );
 }
 

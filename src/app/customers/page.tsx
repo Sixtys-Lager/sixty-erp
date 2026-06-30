@@ -1,49 +1,30 @@
-const customers = [
-  {
-    company: "Gericke Logistik GmbH",
-    contact: "Frau Scherer",
-    city: "09337 Hohenstein-Ernstthal",
-    customerNo: "0112",
-    invoices: 0,
-    templates: 1,
-  },
-  {
-    company: "Scherdel Marienberg GmbH",
-    contact: "-",
-    city: "09496 Marienberg",
-    customerNo: "0116",
-    invoices: 0,
-    templates: 1,
-  },
-  {
-    company: "Diamant Fahrradwerke GmbH",
-    contact: "Supervisor K-Lager",
-    city: "09232 Hartmannsdorf",
-    customerNo: "115",
-    invoices: 0,
-    templates: 1,
-  },
-  {
-    company: "Autohaus Schmidt GmbH",
-    contact: "Jens Schmidt",
-    city: "09337 Bernsdorf OT Hermsdorf",
-    customerNo: "158",
-    invoices: 0,
-    templates: 1,
-  },
-  {
-    company: "HBS Homecare-Bestell-Service Franziska Richter e.K.",
-    contact: "-",
-    city: "09217 Burgstädt",
-    customerNo: "175",
-    invoices: 1,
-    templates: 1,
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import BackToDashboard from "@/components/BackToDashboard";
+import { getCustomers, type Customer } from "@/services/customers";
+import Link from "next/link";
+type Customer = {
+  id?: number;
+  company: string;
+  contact: string;
+  city: string;
+  customerNo: string;
+  invoices: number;
+  templates: number;
+};
 
 export default function CustomersPage() {
+ const [customers, setCustomers] = useState<Customer[]>([]);
+ useEffect(() => {
+  getCustomers()
+    .then(setCustomers)
+    .catch(console.error);
+}, []);
   return (
     <main style={styles.page}>
+      <BackToDashboard />
+
       <header style={styles.header}>
         <div>
           <h1 style={styles.title}>Kunden</h1>
@@ -68,8 +49,8 @@ export default function CustomersPage() {
             <strong>{customer.company}</strong>
             <span>{customer.contact}</span>
             <span>{customer.city}</span>
-            <span>{customer.customerNo}</span>
-            <span style={styles.badge}>{customer.invoices} Rechnung(en)</span>
+            <span>{customer.id}</span>
+            <span style={styles.badge}>{0} Rechnung(en)</span>
           </div>
         ))}
       </section>
@@ -149,5 +130,12 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 999,
     fontWeight: "bold",
     width: "fit-content",
-  },
+    },
+ backLink: {
+  display: "inline-block",
+  marginBottom: 20,
+  color: "#22d3ee",
+  textDecoration: "none",
+  fontWeight: "bold",
+},
 };
